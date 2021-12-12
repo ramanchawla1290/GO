@@ -1,0 +1,228 @@
+definitions:
+  Product:
+    description: Structure of the API Product
+    properties:
+      description:
+        description: Description of the Product
+        maxLength: 50
+        minLength: 10
+        type: string
+        x-go-name: Description
+      id:
+        description: Product ID
+        format: int64
+        type: integer
+        x-go-name: ID
+      name:
+        description: Name of the Product
+        maxLength: 20
+        minLength: 3
+        type: string
+        x-go-name: Name
+      price:
+        description: Price of the Product
+        format: double
+        minimum: 0.01
+        type: number
+        x-go-name: Price
+      sku:
+        description: SKU of the Product
+        maxLength: 15
+        minLength: 8
+        type: string
+        x-go-name: SKU
+    type: object
+    x-go-package: github.com/ramanchawla1290/GO/ProductAPI/data
+  productRequest:
+    properties:
+      description:
+        description: Description of the product
+        maxLength: 50
+        minLength: 10
+        type: string
+        x-go-name: Description
+      name:
+        description: Name of the product
+        maxLength: 20
+        minLength: 3
+        type: string
+        x-go-name: Name
+      price:
+        description: Price of the product
+        format: double
+        minimum: 0.01
+        type: number
+        x-go-name: Price
+      sku:
+        description: SKU of the product
+        maxLength: 15
+        minLength: 8
+        pattern: '[A-Z]+-[A-Z]+-[0-9]+'
+        type: string
+        x-go-name: SKU
+    required:
+    - name
+    - description
+    - price
+    - sku
+    type: object
+    x-go-package: github.com/ramanchawla1290/GO/ProductAPI/handlers
+info: {}
+paths:
+  /products:
+    get:
+      description: Returns a list of all products in the database
+      operationId: listProducts
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/productList'
+        "500":
+          $ref: '#/responses/errorServer'
+      schemes:
+      - http
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Creates a new product in the database
+      operationId: addProduct
+      parameters:
+      - description: Product Information required to create / update a product
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/productRequest'
+        x-go-name: Body
+      produces:
+      - application/json
+      responses:
+        "201":
+          $ref: '#/responses/productResponse'
+        "400":
+          $ref: '#/responses/errorInvalidJSON'
+        "422":
+          $ref: '#/responses/errorValidation'
+        "500":
+          $ref: '#/responses/errorServer'
+      schemes:
+      - http
+      tags:
+      - products
+  /products/{id}:
+    delete:
+      description: Deletes a product with the specified id from the database
+      operationId: deleteProduct
+      parameters:
+      - description: The Product ID to update / delete
+        format: int64
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      produces:
+      - application/json
+      responses:
+        "204":
+          $ref: '#/responses/successNoContent'
+        "404":
+          $ref: '#/responses/errorProductNotFound'
+        "422":
+          $ref: '#/responses/errorValidation'
+        "500":
+          $ref: '#/responses/errorServer'
+      schemes:
+      - http
+      tags:
+      - products
+    get:
+      description: Returns a single product from the database
+      operationId: getProduct
+      parameters:
+      - description: The Product ID to update / delete
+        format: int64
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/productResponse'
+        "404":
+          $ref: '#/responses/errorProductNotFound'
+        "422":
+          $ref: '#/responses/errorValidation'
+        "500":
+          $ref: '#/responses/errorServer'
+      schemes:
+      - http
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Updates the product with the specified Id in the database with
+        new product data
+      operationId: updateProduct
+      parameters:
+      - description: Product Information required to create / update a product
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/productRequest'
+        x-go-name: Body
+      - description: The Product ID to update / delete
+        format: int64
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      produces:
+      - application/json
+      responses:
+        "201":
+          $ref: '#/responses/productResponse'
+        "400":
+          $ref: '#/responses/errorInvalidJSON'
+        "404":
+          $ref: '#/responses/errorProductNotFound'
+        "422":
+          $ref: '#/responses/errorValidation'
+        "500":
+          $ref: '#/responses/errorServer'
+      schemes:
+      - http
+      tags:
+      - products
+responses:
+  errorInvalidJSON:
+    description: Error message as a string response for invalid JSON payload
+  errorProductNotFound:
+    description: Error message as a string response for Product Id not found
+  errorServer:
+    description: Error message as a string response for internal server error
+  errorValidation:
+    description: Error message as a string response for failed Validation
+  productList:
+    description: A list of products
+    schema:
+      items:
+        $ref: '#/definitions/Product'
+      type: array
+  productResponse:
+    description: Details of the product created/updated in the database
+    schema:
+      $ref: '#/definitions/Product'
+  successNoContent:
+    description: No Content
+swagger: "2.0"
