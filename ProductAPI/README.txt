@@ -4,6 +4,8 @@ The purpose of this applciation is to provide a fully functional prototype of a 
 
 This API is also swagger 2.0 compliant.
 
+Host : localhost:9090
+
 Dependencies:
 "github.com/gorilla/mux"
 "github.com/go-playground/validator"
